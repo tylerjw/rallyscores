@@ -1,0 +1,26 @@
+doctype html
+html
+  head
+    link(rel='stylesheet', href='/css/index.css')
+    title Rally Scores
+  body
+    .header
+      a(href="/", style="text-decoration:none;")
+        h1.page-title Rally Scores
+
+    ul.nav
+      li: a(href='/') Home
+      li: a(href='#news') News
+      li: a(href='#about') About
+      li: a(href='#contact') Contact
+    
+    .main-content
+      block content
+
+    .footer
+      p Copyright © 2017 RallyScores. RallyScores® is a Registered Trademark of Bad Man Software (un)Ltd. in the Earth Community and other solar systems.
+      br
+      p Blog: 
+        a(href="http://weaveringrally.com") weaveringrally.com  
+      p Email: 
+        a(href="mailto:tyler@weaveringrally?Subject=RallyScores%20Feedback") tyler@weaveringrally

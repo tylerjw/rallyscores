@@ -1,0 +1,80 @@
+extend default
+
+block content
+  h1 #{data.event_name} #{data.year}
+  h3 #{data.town} 
+  h3 #{data.dates}
+  h5 #{data.event_type}
+
+  - var s = data.num_stages;
+  while s > 0
+    - 
+      var stage = s.toString()
+      var location  = data['stage_times'][stage]['location']
+      var stage_scores  = data['stage_times'][stage]['scores']
+      var num_scores = stage_scores.length
+      var stage_standings  = data['stage_standings'][stage]['scores']
+      var num_standings = stage_standings.length
+      s--
+    br
+    h2 Stage #{stage} - #{location}
+    table
+      thead
+        tr
+          td(colspan="8") Stage Standings
+          td(colspan="9") Overall Standings
+        tr
+          th.label Pos
+          th.label #
+          th.label Cl
+          th.label CP
+          th.label Driver / Codriver
+          th.label Time
+          th.label Back
+          th.label Avg MPH
+
+          th.label Pos
+          th.label #
+          th.label Cl
+          th.label CP
+          th.label Driver / Codriver
+          th.label Time
+          th.label Back
+          th.label Gap
+          th.label Penalties
+      tbody
+        if num_standings
+          - var n = 0
+          while n < num_scores
+            - 
+              var stage = stage_scores[n]
+              var standing = (n < num_standings) ? stage_standings[n] : false
+              var standing = (standing.position) ? standing : false
+              n++
+            tr
+              th.label #{stage.position || '-'}
+              th #{stage.car_number}
+              th #{stage.car_class}
+              th #{stage.position_in_class}
+              th #{stage.driver} / #{stage.codriver}
+              if stage.dnf
+                td(colspan="3", rowspan="1") DNF
+              else
+                th.time #{stage.total_time}
+                th.time #{stage.diff_leader}
+                th.time #{stage.avg_mph}
+              if standing
+                th.label #{standing.position}
+                th #{standing.car_number}
+                th #{standing.car_class}
+                th #{standing.position_in_class}
+                th #{standing.driver} / #{standing.codriver}
+                th.time #{standing.total_time}
+                th.time #{standing.diff_leader}
+                th.time #{standing.diff_previous}
+                th.time #{standing.total_penalty_time}
+              else
+                th.label 
+                td(colspan="8", rowspan="1")
+        else
+          td(colspan="17", rowspan="1") No results posted
