@@ -7,20 +7,13 @@ Scraper and website for comparing scores from rally events
     $ sudo apt-get update
 1. Install compilers and libraries
     $ sudo apt-get install build-essential
-    $ sudo apt-get install zlib1g-dev libbz2-dev libreadline6 libreadline6-dev libssl-dev sqlite3 libsqlite3-dev
-2. Install pyenv
-    $ curl -L https://raw.githubusercontent.com/pyenv/pyenv-installer/master/bin/pyenv-installer | bash
-2.1 follow instructions to copy lines into .bashrc then source .bashrc
-2.2 Update
-    $ pyenv update
-3. Install python 
-    $ pyenv install 3.6.2
-4. Clone repo and install dependencies
-    $ git clone https://github.com/tylerjw/rallyscores.git
-    $ pyenv global 3.6.2
-    $ pip install scrapy pymongo
+    $ sudo apt-get install zlib1g-dev libbz2-dev libreadline6 libreadline6-dev libssl-dev sqlite3 libsqlite3-dev python3 python3-pip
 
-5. Install mongodb
+2. Clone repo and install dependencies
+    $ git clone https://github.com/tylerjw/rallyscores.git
+    $ sudo pip3 install scrapy pymongo scrapyd-client
+
+3. Install mongodb
     $ sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 0C49F3730359A14518585931BC711F9BA15703C6
     $ echo "deb [ arch=amd64,arm64 ] http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.4.list
     $ sudo apt-get update
@@ -28,13 +21,13 @@ Scraper and website for comparing scores from rally events
     $ sudo service mongod start
     $ sudo systemctl enable mongod
 
-6. Install scrapyd
+4. Install scrapyd
     $ sudo -i
-    # sudo apt-get install python3 python3-pip
-    # pip3 install scrapyd
     # useradd -r -s /bin/false scrapy
     # mkdir /var/log/scrapyd
     # mkdir /etc/scrapyd
+    # mkdir /var/lib/scrapyd
+    # chown -R scrapy /var/lib/scrapyd
 
 Copy this into /etc/systemd/system/scrapyd.service
 
@@ -90,6 +83,14 @@ Test you can interact with it:
     $ curl http://localhost:6800/daemonstatus.json
 returns:
 {"finished": 0, "node_name": "ip-172-31-0-90", "status": "ok", "running": 0, "pending": 0}
+
+5. Test deploying scrapy project
+    $ cd ~/rallyscores/timecontrol
+    $ scrapyd-deploy -a
+
+6. Register domain:
+https://aws.amazon.com/getting-started/tutorials/get-a-domain/
+
 
 
 

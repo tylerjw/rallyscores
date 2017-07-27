@@ -12,6 +12,10 @@ class RallyamericaSpider(scrapy.Spider):
     name = 'rallyamerica'
     allowed_domains = ['rally-america.com']
 
+    custom_settings = {
+        'ITEM_PIPELINES': {}, # exclude the mongodb pipeline as we handle storing result in database in the closed method here
+    }
+
     def __init__(self, year='2017', event_code='COLO', *args, **kwargs):
         super(RallyamericaSpider, self).__init__(*args, **kwargs)
 

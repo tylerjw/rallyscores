@@ -10,6 +10,12 @@ class RahistoricalSpider(scrapy.Spider):
     current_url = 'http://www.rally-america.com/events#'
     archive_url = 'http://www.rally-america.com/events/archive'
 
+    custom_settings = {
+        'MONGO_DATABASE': 'rally',
+        'MONGO_COLLECTION': 'ra_events',
+        'ID_FIELDS': {'year','event_code'},
+    }
+
     def start_requests(self):
         yield scrapy.Request(self.current_url, self.parse_events)
         yield scrapy.Request(self.archive_url, self.parse_archive)
