@@ -4,6 +4,8 @@ var express = require('express')
   , mongodb = require('mongodb')
   , homepage = require('pug').compileFile(__dirname + '/source/templates/homepage.pug')
   , ra = require('pug').compileFile(__dirname + '/source/templates/ra.pug')
+  , MongoClient = mongodb.MongoClient
+  , mongodb_url = 'mongodb://localhost:27017/rally'
 
 app.use(logger('dev'))
 app.use(express.static(__dirname + '/static'))
@@ -36,13 +38,11 @@ app.get('/ra/:year/:event_code', function(req, res, next) {
   try {
     var year = req.params.year
     var event_code = req.params.event_code
-    var MongoClient = mongodb.MongoClient
-    var url = 'mongodb://localhost:27017/rally'
 
     console.log(year)
     console.log(event_code)
 
-    MongoClient.connect(url, function(err, db) {
+    MongoClient.connect(mongodb_url, function(err, db) {
       if (err) {
         console.log('Unable to connect to database server', err)
       } else {
