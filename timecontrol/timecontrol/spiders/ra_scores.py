@@ -3,6 +3,7 @@ import scrapy
 import re
 import logging
 import pymongo
+import datetime
 from daterangeparser import parse
 
 logger = logging.getLogger(__name__)
@@ -36,12 +37,13 @@ class RallyamericaSpider(scrapy.Spider):
             'stage_info': {},
             'stage_times': {},
             'stage_standings': {},
+            'updated': datetime.datetime.now()
         }
 
     # We never yield data to be written in the standard way, we send it all at once when the spider is done
     def closed(self, reason):
         client = pymongo.MongoClient('localhost:27017')
-        resultstable = client['rally']['rallyamerica']
+        resultstable = client['rally']['ra_scores']
 
         resultstable.replace_one({'year': self.year, 'event_code': self.event_code},self.result,upsert=True)
         client.close()
@@ -66,9 +68,8 @@ class RallyamericaSpider(scrapy.Spider):
         dates = response.xpath('//div[@class="event-details"]/h3[1]/text()').extract_first().strip()
         start, end = parse(dates)
         start = (start if start else parse(self.result['year']))
-        end = (end if end else start)
         self.result['start'] = start
-        self.result['end'] = end
+        if end: self.result['end'] = end
 
     def parse_stage(self, response):
         title = response.xpath('//div[@class="pageHead"]/strong/text()').extract_first()

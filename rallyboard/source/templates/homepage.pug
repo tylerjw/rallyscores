@@ -10,11 +10,27 @@ block content
 
   p
     each year in years
-      h1 #{year}
+      h1 #{year} Events
       ul
-        each event in parentEvents[year]
-          - var url = "/ra/" + year + "/" + event.event_code
-          li 
-            a(href=url) #{event.name} - code: #{event.event_code}
-            if 
+        each event in events[year]
+          - 
+            var url = "/ra/" + year + "/" + event.event_code
+
+            var monthNames = [
+              "January", "February", "March",
+              "April", "May", "June", "July",
+              "August", "September", "October",
+              "November", "December"
+            ];
+            var date = monthNames[event.start.getMonth()] + ' ' + event.start.getDate()
+            if(event.end) { date += ' - ' + event.end.getDate(); }
+            date += ', ' + event.start.getFullYear()
+
+          li #[a(href=url) #{event.name}] - code: #{event.event_code} - #{date}
+            if event.children
+              ul
+                each child in event.children
+                  - var url = "/ra/" + year + "/" + child.event_code
+                  li #[a(href=url) #{child.name}] - code: #{child.event_code}
+      br
 

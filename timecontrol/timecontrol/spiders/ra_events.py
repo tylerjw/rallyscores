@@ -50,11 +50,12 @@ class RaEventsSpider(scrapy.Spider):
             item['type'] = 'child'
 
         associated_event_links = response.xpath("//strong[contains(text(),'Associated')]/following-sibling::a/@href").extract()
+        associated_event_names = response.xpath("//strong[contains(text(),'Associated')]/following-sibling::a/text()").extract()
         associated_events = []
         if associated_event_links:
-            for link in associated_event_links:
+            for link,name in zip(associated_event_links,associated_event_names):
                 _,_,year,event_code = link.split('/')
-                associated_events.append({'year': year, 'event_code': event_code})
+                associated_events.append({'year': year, 'event_code': event_code, 'name': name})
                 yield scrapy.Request(response.urljoin(link), callback=self.parse_event)
 
             item['children'] = associated_events
@@ -70,9 +71,8 @@ class RaEventsSpider(scrapy.Spider):
         dates = response.xpath('//div[@class="event-details"]/h3[1]/text()').extract_first().strip()
         start, end = parse(dates)
         start = (start if start else parse(year))
-        end = (end if end else start)
         item['start'] = start
-        item['end'] = end
+        if end: item['end'] = end
 
         yield item
 

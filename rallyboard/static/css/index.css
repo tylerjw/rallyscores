@@ -70,6 +70,9 @@ body {
 .main-content th.time {
   text-align: right;
 }
+.main-content ul {
+  padding-left: 1.5em;
+}
 .footer {
   margin: 0px auto;
   max-width: 800px;

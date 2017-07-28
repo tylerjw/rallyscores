@@ -1,80 +1,143 @@
 extend default
 
+block head_block
+  script(src='/socket.io/socket.io.js')
+  script.
+    if (data.jobid) {
+      window.addEventListener('load', function() { 
+        var socket = io('http://rallyscores.com');
+        var jobid = "#{data.jobid}"
+
+        var get_status = function(jobid, status) {
+          if (status.status !== "ok") {
+            return status.status
+          }
+
+          for (var i in status.running) {
+            if (jobid === status.running[i].id) {
+              return "running"
+            }
+          }
+
+          for (var i in status.finished) {
+            if (jobid === status.finished[i].id) {
+              return "finished"
+            }
+          }
+
+          for (var i in status.pending) {
+            if (jobid === status.pending[i].id) {
+              return "pending"
+            }
+          }
+
+          return "We lost contact, please call us so we can send someone go to look for him."
+        }
+
+        socket.on('status', function(status) {
+          status = JSON.parse(status)
+          job_status = get_status(jobid, status)
+          document.getElementById("status").innerHTML = job_status;
+
+          if (job_status === "finished") {
+            // reload to get the latest data
+            window.location.reload()
+          }
+        });
+      });
+    }
+
 block content
-  h1 #{data.event_name} #{data.year}
-  h3 #{data.town} 
-  h3 #{data.dates}
-  h5 #{data.event_type}
-
-  - var s = data.num_stages;
-  while s > 0
+  if data.updated
     - 
-      var stage = s.toString()
-      var location  = data['stage_times'][stage]['location']
-      var stage_scores  = data['stage_times'][stage]['scores']
-      var num_scores = stage_scores.length
-      var stage_standings  = data['stage_standings'][stage]['scores']
-      var num_standings = stage_standings.length
-      s--
-    br
-    h2 Stage #{stage} - #{location}
-    table
-      thead
-        tr
-          td(colspan="8") Stage Standings
-          td(colspan="9") Overall Standings
-        tr
-          th.label Pos
-          th.label #
-          th.label Cl
-          th.label CP
-          th.label Driver / Codriver
-          th.label Time
-          th.label Back
-          th.label Avg MPH
+      var monthNames = [
+        "January", "February", "March",
+        "April", "May", "June", "July",
+        "August", "September", "October",
+        "November", "December"
+      ];
+      var dates = monthNames[data.start.getMonth()] + ' ' + data.start.getDate()
+      if(data.end) { dates += ' - ' + data.end.getDate(); }
+      dates += ', ' + data.start.getFullYear()
 
-          th.label Pos
-          th.label #
-          th.label Cl
-          th.label CP
-          th.label Driver / Codriver
-          th.label Time
-          th.label Back
-          th.label Gap
-          th.label Penalties
-      tbody
-        if num_standings
-          - var n = 0
-          while n < num_scores
-            - 
-              var stage = stage_scores[n]
-              var standing = (n < num_standings) ? stage_standings[n] : false
-              var standing = (standing.position) ? standing : false
-              n++
-            tr
-              th.label #{stage.position || '-'}
-              th #{stage.car_number}
-              th #{stage.car_class}
-              th #{stage.position_in_class}
-              th #{stage.driver} / #{stage.codriver}
-              if stage.dnf
-                td(colspan="3", rowspan="1") DNF
-              else
-                th.time #{stage.total_time}
-                th.time #{stage.diff_leader}
-                th.time #{stage.avg_mph}
-              if standing
-                th.label #{standing.position}
-                th #{standing.car_number}
-                th #{standing.car_class}
-                th #{standing.position_in_class}
-                th #{standing.driver} / #{standing.codriver}
-                th.time #{standing.total_time}
-                th.time #{standing.diff_leader}
-                th.time #{standing.diff_previous}
-                th.time #{standing.total_penalty_time}
-              else
-                th.label 
-                td(colspan="8", rowspan="1")
-        else
-          td(colspan="17", rowspan="1") No results posted
+    h1 #{data.event_name} #{data.year}
+    h3 #{data.town} 
+    h3 #{dates}
+    h5 #{data.event_type}
+    h5 Last updated at #{data.updated}
+
+    - var s = data.num_stages;
+    while s > 0
+      - 
+        var stage = s.toString()
+        var location  = data['stage_times'][stage]['location']
+        var stage_scores  = data['stage_times'][stage]['scores']
+        var num_scores = stage_scores.length
+        var stage_standings  = data['stage_standings'][stage]['scores']
+        var num_standings = stage_standings.length
+        s--
+      br
+      h2 Stage #{stage} - #{location}
+      table
+        thead
+          tr
+            td(colspan="8") Stage Standings
+            td(colspan="9") Overall Standings
+          tr
+            th.label Pos
+            th.label #
+            th.label Cl
+            th.label CP
+            th.label Driver / Codriver
+            th.label Time
+            th.label Back
+            th.label Avg MPH
+
+            th.label Pos
+            th.label #
+            th.label Cl
+            th.label CP
+            th.label Driver / Codriver
+            th.label Time
+            th.label Back
+            th.label Gap
+            th.label Penalties
+        tbody
+          if num_standings
+            - var n = 0
+            while n < num_scores
+              - 
+                var stage = stage_scores[n]
+                var standing = (n < num_standings) ? stage_standings[n] : false
+                var standing = (standing.position) ? standing : false
+                n++
+              tr
+                th.label #{stage.position || '-'}
+                th #{stage.car_number}
+                th #{stage.car_class}
+                th #{stage.position_in_class}
+                th #{stage.driver} / #{stage.codriver}
+                if stage.dnf
+                  td(colspan="3", rowspan="1") DNF
+                else
+                  th.time #{stage.total_time}
+                  th.time #{stage.diff_leader}
+                  th.time #{stage.avg_mph}
+                if standing
+                  th.label #{standing.position}
+                  th #{standing.car_number}
+                  th #{standing.car_class}
+                  th #{standing.position_in_class}
+                  th #{standing.driver} / #{standing.codriver}
+                  th.time #{standing.total_time}
+                  th.time #{standing.diff_leader}
+                  th.time #{standing.diff_previous}
+                  th.time #{standing.total_penalty_time}
+                else
+                  th.label 
+                  td(colspan="8", rowspan="1")
+          else
+            td(colspan="17", rowspan="1") No results posted
+  else
+    p.
+      You are the first to view this event.  We are updating Rally America for scores on this event.  Code: #{data.event_code}, Year: #{data.year}.  This page will automatically refresh when the data is available.  Please be patient.

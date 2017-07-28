@@ -6,6 +6,9 @@ var express = require('express')
   , ra = require('pug').compileFile(__dirname + '/source/templates/ra.pug')
   , MongoClient = mongodb.MongoClient
   , mongodb_url = 'mongodb://localhost:27017/rally'
+  , server = require('http').createServer(app)
+  , io = require('socket.io').listen(server)
+  , request = require('request')
 
 app.use(logger('dev'))
 app.use(express.static(__dirname + '/static'))
@@ -18,12 +21,11 @@ app.get('/', function (req, res, next) {
       } else {
         console.log('Connection to database established')
         var collection = db.collection('ra_events')
-        collection.find({},{'sort' : ['start', -1]}).toArray(function(err, data) {
+        collection.find({},{'sort' : ['start', 'descending']}).toArray(function(err, data) {
           if (err) {
             res.send(err)
           } else if (data) {
             var parentEvents = {};
-            var childrenEvents = [];
             var years = new Set();
             for (let event of data) {
               if (event['type'] === 'parent') {
@@ -33,14 +35,11 @@ app.get('/', function (req, res, next) {
                   parentEvents[event.year] = [event]
                 }
                 years.add(event.year)
-              } else {
-                childrenEvents.push(event)
               }
             }
             years = Array.from(years).sort(function(a, b){return b-a});
             res.send(homepage({
-              "parentEvents": parentEvents,
-              "childrenEvents": childrenEvents,
+              "events": parentEvents,
               "years": years
             }))
           }
@@ -65,7 +64,7 @@ app.get('/ra/:year/:event_code', function(req, res, next) {
         console.log('Unable to connect to database server', err)
       } else {
         console.log('Connection to database established')
-        var collection = db.collection('rallyamerica')
+        var collection = db.collection('ra_scores')
         collection.findOne({
           'year':year,
           'event_code':event_code
@@ -76,6 +75,28 @@ app.get('/ra/:year/:event_code', function(req, res, next) {
             res.send(ra({
               data: data
             }))
+          } else {
+            // send the request to start the job for scrapyd
+            request.post(
+              'http://localhost:6800/schedule.json',
+              { form: { 
+                project: 'timecontrol', 
+                spider: 'ra_scores',
+                year: year,
+                event_code: event_code,
+              } },
+              function (err, response, data) {
+                if (!err && response.statusCode == 200) {
+                  data = JSON.parse(data)
+                  res.send(ra({
+                    data:{'year': year, 'event_code': event_code, 'jobid': data.jobid}
+                  }))
+                } else {
+                  console.log(err)
+                  res.send(err);
+                }
+              }
+            );
           }
         })
       }
@@ -84,6 +105,35 @@ app.get('/ra/:year/:event_code', function(req, res, next) {
     next(e)
   }
 })
+
+var waitingClients = 0;
+var checkStatus = function() {
+  if (waitingClients > 0) {
+    request.get(
+      'http://localhost:6800/listjobs.json?project=timecontrol',
+      function (err, response, data) {
+        if (!err && response.statusCode == 200) {
+          io.emit('status', data);
+        } else {
+          console.log(err)
+          res.send(err);
+        }
+      }
+    );
+  }
+}
+// poll the status from scrapyd every 2 seconds
+setInterval(checkStatus, 3000);
+
+io.on('connection', function(client) {
+  waitingClients += 1;
+  console.log('connection waitingClients: ', waitingClients);
+
+  client.on('disconnect', function() {
+    waitingClients -= 1;
+    console.log('disconnect waitingClients: ', waitingClients);
+  });
+});
 
 app.listen(process.env.PORT || 80, function() {
   console.log('Listening on http://localhost:' + (process.env.PORT || 80))
