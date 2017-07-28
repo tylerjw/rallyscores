@@ -12,7 +12,7 @@ app.use(express.static(__dirname + '/static'))
 
 app.get('/', function (req, res, next) {
   try {
-    MongoClient.connect(url, function(err, db) {
+    MongoClient.connect(mongodb_url, function(err, db) {
       if (err) {
         console.log('Unable to connect to database server', err)
       } else {
