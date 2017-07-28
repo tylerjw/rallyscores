@@ -3,6 +3,7 @@ import scrapy
 import re
 import logging
 import pymongo
+from daterangeparser import parse
 
 logger = logging.getLogger(__name__)
 
@@ -59,9 +60,14 @@ class RallyamericaSpider(scrapy.Spider):
 
     def parse_event(self, response):
         self.result['event_name'] = response.xpath('//h2[@class="content-title"]/text()[2]').extract_first().strip()
-        self.result['dates'] = response.xpath('//div[@class="event-details"]/h3[1]/text()').extract_first().strip()
         self.result['town'] = response.xpath('//div[@class="event-details"]/h3[2]/text()').extract_first().strip()
         self.result['event_type'] = response.xpath('//div[@class="event-details"]/h5[1]/text()').extract_first().strip()
+
+        dates = response.xpath('//div[@class="event-details"]/h3[1]/text()').extract_first().strip()
+        start, end = parse(dates)
+        end = (end if end else start)
+        self.result['start'] = start
+        self.result['end'] = end
 
     def parse_stage(self, response):
         title = response.xpath('//div[@class="pageHead"]/strong/text()').extract_first()

@@ -64,13 +64,14 @@ class RaEventsSpider(scrapy.Spider):
             item['type'] = 'parent'
 
         item['name'] = response.xpath('//h2[@class="content-title"]/text()[2]').extract_first().strip()
+        item['town'] = response.xpath('//div[@class="event-details"]/h3[2]/text()').extract_first().strip()
+        item['event_type'] = response.xpath('//div[@class="event-details"]/h5[1]/text()').extract_first().strip()
+
         dates = response.xpath('//div[@class="event-details"]/h3[1]/text()').extract_first().strip()
         start, end = parse(dates)
         end = (end if end else start)
         item['start'] = start
         item['end'] = end
-        item['town'] = response.xpath('//div[@class="event-details"]/h3[2]/text()').extract_first().strip()
-        item['event_type'] = response.xpath('//div[@class="event-details"]/h5[1]/text()').extract_first().strip()
 
         yield item
 
