@@ -9,5 +9,17 @@ block content
     page loads and to reduce the load on RA's site.
 
 
-  p.
-    #{data}
+  -
+    var dataTree = {};
+    for (event in data) {
+      if (event.year not in dataTree) {
+        dataTree[event.year] = [event]
+      } else {
+        dataTree[event.year].push(event)
+      }
+    }
+  each year,events in dataTree
+    h1 #{year}
+    each event in events
+      h2 #{event.name}
+
