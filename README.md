@@ -28,6 +28,7 @@ Scraper and website for comparing scores from rally events
     # mkdir /etc/scrapyd
     # mkdir /var/lib/scrapyd
     # chown -R scrapy /var/lib/scrapyd
+    # chown -R scrapy /var/log/scrapyd
 
 Copy this into /etc/systemd/system/scrapyd.service
 
@@ -90,6 +91,14 @@ returns:
 
 6. Register domain:
 https://aws.amazon.com/getting-started/tutorials/get-a-domain/
+
+7. Setup nodejs server
+    $ curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
+    $ sudo apt-get install -y nodejs
+    $ npm install
+
+Test running the server
+    $ npm run watch
 
 
 
