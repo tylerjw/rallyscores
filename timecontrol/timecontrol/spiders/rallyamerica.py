@@ -65,6 +65,7 @@ class RallyamericaSpider(scrapy.Spider):
 
         dates = response.xpath('//div[@class="event-details"]/h3[1]/text()').extract_first().strip()
         start, end = parse(dates)
+        start = (start if start else parse(self.result['year']))
         end = (end if end else start)
         self.result['start'] = start
         self.result['end'] = end

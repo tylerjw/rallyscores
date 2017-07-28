@@ -69,6 +69,7 @@ class RaEventsSpider(scrapy.Spider):
 
         dates = response.xpath('//div[@class="event-details"]/h3[1]/text()').extract_first().strip()
         start, end = parse(dates)
+        start = (start if start else parse(year))
         end = (end if end else start)
         item['start'] = start
         item['end'] = end

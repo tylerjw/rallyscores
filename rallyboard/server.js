@@ -18,7 +18,7 @@ app.get('/', function (req, res, next) {
       } else {
         console.log('Connection to database established')
         var collection = db.collection('ra_events')
-        collection.find().toArray(function(err, data) {
+        collection.find({},{'sort' : ['start', -1]}).toArray(function(err, data) {
           if (err) {
             res.send(err)
           } else if (data) {

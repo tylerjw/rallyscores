@@ -12,8 +12,9 @@ block content
     each year in years
       h1 #{year}
       ul
-        each event in dataTree[year]
+        each event in parentEvents[year]
           - var url = "/ra/" + year + "/" + event.event_code
           li 
             a(href=url) #{event.name} - code: #{event.event_code}
+            if 
 
