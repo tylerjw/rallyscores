@@ -100,6 +100,13 @@ https://aws.amazon.com/getting-started/tutorials/get-a-domain/
 Test running the server (sudo needed for port 80)
     $ sudo npm run watch
 
+8. Setup indexes in mongo database
+    $ mongo
+    > use rally
+    > db.ra_events.createIndex({year: -1, event_code: 1})
+    > db.rallyamerica.createIndex({year: -1, event_code: 1})
+
+
 
 
 

@@ -16,22 +16,17 @@ app.get('/', function (req, res, next) {
       } else {
         console.log('Connection to database established')
         var collection = db.collection('rallyamerica')
-        collection.findOne({
-          'year':year,
-          'event_code':event_code
-        }, function(err, data) {
+        collection.find({}, function(err, data) {
           if (err) {
             res.send(err)
           } else if (data) {
-            res.send(ra({
+            res.send(homepage({
               data: data
             }))
           }
         })
       }
     })
-    var html = homepage({ title: 'Home' })
-    res.send(html)
   } catch(e) {
     next(e)
   }
