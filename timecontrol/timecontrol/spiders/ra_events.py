@@ -2,6 +2,7 @@
 import scrapy
 import logging
 import datetime
+from daterangeparser import parse
 
 logger = logging.getLogger(__name__)
 
@@ -25,7 +26,6 @@ class RaEventsSpider(scrapy.Spider):
         this_year = int(datetime.datetime.now().year)
         for year in range(first_year, this_year+1):
             url = self.events_url + str(year)
-            logger.debug(url)
             yield scrapy.Request(url, self.parse_events)
 
     def parse_events(self, response):
@@ -39,7 +39,6 @@ class RaEventsSpider(scrapy.Spider):
         # for testing....
         # scrapy.shell.inspect_response(response, self)
 
-        logger.debug(response.url.split('/'))
         _,_,_,_,year,event_code = response.url.split('/')
 
         item = {'year': year, 'event_code': event_code}
@@ -65,7 +64,11 @@ class RaEventsSpider(scrapy.Spider):
             item['type'] = 'parent'
 
         item['name'] = response.xpath('//h2[@class="content-title"]/text()[2]').extract_first().strip()
-        item['dates'] = response.xpath('//div[@class="event-details"]/h3[1]/text()').extract_first().strip()
+        dates = response.xpath('//div[@class="event-details"]/h3[1]/text()').extract_first().strip()
+        start, end = parse(dates)
+        end = (end if end else start)
+        item['start'] = start
+        item['end'] = end
         item['town'] = response.xpath('//div[@class="event-details"]/h3[2]/text()').extract_first().strip()
         item['event_type'] = response.xpath('//div[@class="event-details"]/h5[1]/text()').extract_first().strip()
 

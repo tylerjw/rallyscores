@@ -11,7 +11,7 @@ Scraper and website for comparing scores from rally events
 
 2. Clone repo and install dependencies
     $ git clone https://github.com/tylerjw/rallyscores.git
-    $ sudo pip3 install scrapy pymongo scrapyd-client
+    $ sudo pip3 install scrapy pymongo scrapyd-client daterangeparser
 
 3. Install mongodb
     $ sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 0C49F3730359A14518585931BC711F9BA15703C6
