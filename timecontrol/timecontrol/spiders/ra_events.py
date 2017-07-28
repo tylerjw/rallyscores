@@ -61,6 +61,9 @@ class RaEventsSpider(scrapy.Spider):
             item['children'] = associated_events
             item['type'] = 'parent'
 
+        if 'type' not in item:
+            item['type'] = 'parent'
+
         item['name'] = response.xpath('//h2[@class="content-title"]/text()[2]').extract_first().strip()
         item['dates'] = response.xpath('//div[@class="event-details"]/h3[1]/text()').extract_first().strip()
         item['town'] = response.xpath('//div[@class="event-details"]/h3[2]/text()').extract_first().strip()

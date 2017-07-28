@@ -18,23 +18,29 @@ app.get('/', function (req, res, next) {
       } else {
         console.log('Connection to database established')
         var collection = db.collection('ra_events')
-        collection.find({'type':'parent'}).toArray(function(err, data) {
+        collection.find().toArray(function(err, data) {
           if (err) {
             res.send(err)
           } else if (data) {
-            var dataTree = {};
+            var parentEvents = {};
+            var childrenEvents = [];
             var years = new Set();
             for (let event of data) {
-              if (event.year in dataTree) {
-                dataTree[event.year].push(event)
+              if (event['type'] === 'parent') {
+                if (event.year in parentEvents) {
+                  parentEvents[event.year].push(event)
+                } else {
+                  parentEvents[event.year] = [event]
+                }
+                years.add(event.year)
               } else {
-                dataTree[event.year] = [event]
+                childrenEvents.push(event)
               }
-              years.add(event.year)
             }
             years = Array.from(years).sort(function(a, b){return b-a});
             res.send(homepage({
-              "dataTree": dataTree,
+              "parentEvents": parentEvents,
+              "childrenEvents": childrenEvents,
               "years": years
             }))
           }

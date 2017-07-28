@@ -110,6 +110,9 @@ Notes:
 + Delete all elements in a mongodb collection:
     db.collection.deleteMany({})
 
+TODO:
+1. Stop caching ra page data once the site is live (10 min cache)
+
 
 
 
