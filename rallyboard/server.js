@@ -17,13 +17,25 @@ app.get('/', function (req, res, next) {
         console.log('Unable to connect to database server', err)
       } else {
         console.log('Connection to database established')
-        var collection = db.collection('rallyamerica')
-        collection.find({}, function(err, data) {
+        var collection = db.collection('ra_events')
+        collection.find({'type':'parent'}).toArray(function(err, data) {
           if (err) {
             res.send(err)
           } else if (data) {
+            var dataTree = {};
+            var years = new Set();
+            for (let event of data) {
+              if (event.year in dataTree) {
+                dataTree[event.year].push(event)
+              } else {
+                dataTree[event.year] = [event]
+              }
+              years.add(event.year)
+            }
+            years = Array.from(years).sort(function(a, b){return b-a});
             res.send(homepage({
-              data: data
+              "dataTree": dataTree,
+              "years": years
             }))
           }
         })
@@ -47,7 +59,7 @@ app.get('/ra/:year/:event_code', function(req, res, next) {
         console.log('Unable to connect to database server', err)
       } else {
         console.log('Connection to database established')
-        var collection = db.collection('ra_events')
+        var collection = db.collection('rallyamerica')
         collection.findOne({
           'year':year,
           'event_code':event_code

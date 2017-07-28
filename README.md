@@ -106,7 +106,9 @@ Test running the server (sudo needed for port 80)
     > db.ra_events.createIndex({year: -1, event_code: 1})
     > db.rallyamerica.createIndex({year: -1, event_code: 1})
 
-
+Notes:
++ Delete all elements in a mongodb collection:
+    db.collection.deleteMany({})
 
 
 

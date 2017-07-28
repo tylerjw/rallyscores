@@ -8,18 +8,12 @@ block content
     This site caches times in it's own database to provide you fast
     page loads and to reduce the load on RA's site.
 
-
-  -
-    var dataTree = {};
-    for (event in data) {
-      if (event.year not in dataTree) {
-        dataTree[event.year] = [event]
-      } else {
-        dataTree[event.year].push(event)
-      }
-    }
-  each year,events in dataTree
-    h1 #{year}
-    each event in events
-      h2 #{event.name}
+  p
+    each year in years
+      h1 #{year}
+      ul
+        each event in dataTree[year]
+          - var url = "/ra/" + year + "/" + event.event_code
+          li 
+            a(href=url) #{event.name} - code: #{event.event_code}
 
