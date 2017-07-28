@@ -97,8 +97,8 @@ https://aws.amazon.com/getting-started/tutorials/get-a-domain/
     $ sudo apt-get install -y nodejs
     $ npm install
 
-Test running the server
-    $ npm run watch
+Test running the server (sudo needed for port 80)
+    $ sudo npm run watch
 
 
 

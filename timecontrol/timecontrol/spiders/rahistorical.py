@@ -31,7 +31,7 @@ class RahistoricalSpider(scrapy.Spider):
             name = tag.xpath('.//text()').extract_first()
 
             logger.debug('{}, {}, {}, {}, {}'.format(tag, link,year,event_code,name))
-            yield {'year': year, 'evet_code': event_code, 'name': name}
+            yield {'year': year, 'event_code': event_code, 'name': name}
 
 
     def parse_archive(self, response):

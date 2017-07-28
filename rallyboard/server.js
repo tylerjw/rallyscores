@@ -10,6 +10,26 @@ app.use(express.static(__dirname + '/static'))
 
 app.get('/', function (req, res, next) {
   try {
+    MongoClient.connect(url, function(err, db) {
+      if (err) {
+        console.log('Unable to connect to database server', err)
+      } else {
+        console.log('Connection to database established')
+        var collection = db.collection('rallyamerica')
+        collection.findOne({
+          'year':year,
+          'event_code':event_code
+        }, function(err, data) {
+          if (err) {
+            res.send(err)
+          } else if (data) {
+            res.send(ra({
+              data: data
+            }))
+          }
+        })
+      }
+    })
     var html = homepage({ title: 'Home' })
     res.send(html)
   } catch(e) {
@@ -32,7 +52,7 @@ app.get('/ra/:year/:event_code', function(req, res, next) {
         console.log('Unable to connect to database server', err)
       } else {
         console.log('Connection to database established')
-        var collection = db.collection('rallyamerica')
+        var collection = db.collection('ra_events')
         collection.findOne({
           'year':year,
           'event_code':event_code
