@@ -19,7 +19,7 @@ class RaScoresSpider(scrapy.Spider):
     }
 
     def __init__(self, year='2017', event_code='COLO', *args, **kwargs):
-        super(RallyamericaSpider, self).__init__(*args, **kwargs)
+        super(RaScoresSpider, self).__init__(*args, **kwargs)
 
         self.year = year
         self.event_code = event_code
