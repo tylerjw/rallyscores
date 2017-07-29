@@ -14,10 +14,6 @@ app.use(logger('dev'))
 app.use(express.static(__dirname + '/static'))
 app.set('port', process.env.PORT || 80)
 
-app.use(bodyParser.json()); // for parsing application/json
-app.use(bodyParser.urlencoded({extended: true})); // for parsing application/x-www-form-urlencoded
-app.use(upload.array()); // for parsing multipart/form-data
-
 app.get('/', function (req, res, next) {
   try {
     MongoClient.connect(mongodb_url, function(err, db) {
