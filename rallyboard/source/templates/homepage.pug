@@ -15,16 +15,18 @@ block content
         each event in events[year]
           - 
             var url = "/ra/" + year + "/" + event.event_code
-
-            var monthNames = [
-              "January", "February", "March",
-              "April", "May", "June", "July",
-              "August", "September", "October",
-              "November", "December"
-            ];
-            var date = monthNames[event.start.getMonth()] + ' ' + event.start.getDate()
-            if(event.end) { date += ' - ' + event.end.getDate(); }
-            date += ', ' + event.start.getFullYear()
+            var date = 'unknown date'
+            if (event.start) {
+              var monthNames = [
+                "January", "February", "March",
+                "April", "May", "June", "July",
+                "August", "September", "October",
+                "November", "December"
+              ];
+              date = monthNames[event.start.getMonth()] + ' ' + event.start.getDate()
+              if(event.end) { date += ' - ' + event.end.getDate(); }
+              date += ', ' + event.start.getFullYear()
+            }
 
           li #[a(href=url) #{event.name}] - code: #{event.event_code} - #{date}
             if event.children
