@@ -1,12 +1,41 @@
 extend default
 
 block head_block
+  -
+    var is_live = function(event) {
+      var today = new Date()
+      var yesterday = new Date(new Date().getTime() - 24 * 60 * 60 * 1000);
+      if ("start" in event) {
+        if(event.start >= today) {
+          var end = event.start
+          if ("end" in event) {
+            end = event.end
+          }
+          if(end <= yesterday) {
+            return true
+          }
+        }
+      }
+      return false
+    }
+    var live_event = ""
+    if (is_live(data)) {
+      var live_event = "true"
+    }
+
   script(src='/socket.io/socket.io.js')
   script.
-    if (data.jobid) {
+    var year = "#{data.year}"
+    var event_code = "#{data.event_code}"
+    if ("" === "#{data.updated}") {
       window.addEventListener('load', function() { 
-        var socket = io('http://rallyscores.com');
-        var jobid = "#{data.jobid}"
+        var socket = io.connect('http://rallyscores.com');
+        socket.once('connect', function() {
+          socket.emit('crawl', {
+            "year":year, 
+            "event_code":event_code
+          })
+        })
 
         var get_status = function(jobid, status) {
           if (status.status !== "ok") {
@@ -31,20 +60,52 @@ block head_block
             }
           }
 
-          return "We lost contact, please call us so we can send someone go to look for him."
+          return "unknown"
         }
 
-        socket.on('status', function(status) {
-          status = JSON.parse(status)
-          job_status = get_status(jobid, status)
-          document.getElementById("status").innerHTML = job_status;
+        var jobid = ""
 
-          if (job_status === "finished") {
+        socket.on('crawling', function(data) {
+          var jobid = data.jobid
+          document.getElementById("jobid").innerHTML = jobid;
+
+          socket.on('status', function(status) {
+            status = JSON.parse(status)
+            job_status = get_status(jobid, status)
+
+            document.getElementById("status").innerHTML = job_status;
+
+            if (job_status === "finished") {
+              socket.emit('finished', {
+                "year":year, 
+                "event_code":event_code
+              })
+              // reload to get the latest data
+              window.location.reload()
+            }
+          })
+        })
+      })
+    } else {
+
+      window.addEventListener('load', function() { 
+        var socket = io.connect('http://rallyscores.com');
+        socket.once('connect', function() {
+          socket.emit('viewing', {
+            "year":year, 
+            "event_code":event_code,
+            "is_live": "#{live_event}"
+          })
+        })
+
+        socket.on('refresh', function(event_data) {
+          if (year == event_data.year && 
+            event_code == event_data.event_code) {
             // reload to get the latest data
             window.location.reload()
           }
-        });
-      });
+        })
+      })
     }
 
 block content
@@ -61,20 +122,35 @@ block content
       dates += ', ' + data.start.getFullYear()
 
     h1 #{data.event_name} #{data.year}
+      if live_event
+        strong 
+          font(color="red") LIVE
     h3 #{data.town} 
     h3 #{dates}
     h5 #{data.event_type}
     h5 Last updated at #{data.updated}
+    if live_event
+      h5
+        font(color="red") You do not need to refresh this page.  It will refresh automatically to get you the latest results.
 
     - var s = data.num_stages;
     while s > 0
       - 
         var stage = s.toString()
-        var location  = data['stage_times'][stage]['location']
-        var stage_scores  = data['stage_times'][stage]['scores']
-        var num_scores = stage_scores.length
-        var stage_standings  = data['stage_standings'][stage]['scores']
-        var num_standings = stage_standings.length
+        if('stage_times' in data) {
+          if ('location' in data['stage_times']) {
+            var location  = data['stage_times'][stage]['location']
+          }
+          if (stage in data['stage_times']) {
+            var stage_scores  = data['stage_times'][stage]['scores']
+            var num_scores = stage_scores.length
+          }
+
+          if (stage in data['stage_standings']) {
+            var stage_standings  = data['stage_standings'][stage]['scores']
+            var num_standings = stage_standings.length
+          }
+        }
         s--
       br
       h2 Stage #{stage} - #{location}
@@ -140,4 +216,5 @@ block content
             td(colspan="17", rowspan="1") No results posted
   else
     p.
-      You are the first to view this event.  We are updating Rally America for scores on this event.  Code: #{data.event_code}, Year: #{data.year}.  This page will automatically refresh when the data is available.  Please be patient.
+      You are the first to view this event.  We are updating our database of scores to reflect Rally America's website for this event.  Code: #{data.event_code}, Year: #{data.year}.  This page will automatically refresh when the data is available.  Please be patient. 
+    p Your jobid is #[strong#jobid .].  The status is:  #[strong#status .]
