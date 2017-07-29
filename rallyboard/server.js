@@ -115,6 +115,8 @@ var checkStatus = function() {
       function (err, response, data) {
         if (!err && response.statusCode == 200) {
           io.emit('status', data);
+          console.log(data)
+          console.log('waiting clients: ' + waitingClients)
         } else {
           console.log(err)
           res.send(err);
