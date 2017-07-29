@@ -104,7 +104,7 @@ Test running the server (sudo needed for port 80)
     $ mongo
     > use rally
     > db.ra_events.createIndex({year: -1, event_code: 1})
-    > db.rallyamerica.createIndex({year: -1, event_code: 1})
+    > db.ra_scores.createIndex({year: -1, event_code: 1})
 
 Notes:
 + Delete all elements in a mongodb collection:

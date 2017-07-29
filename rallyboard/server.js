@@ -1,5 +1,6 @@
 var express = require('express')
   , logger = require('morgan')
+  , request = require('request')
   , app = express()
   , mongodb = require('mongodb')
   , homepage = require('pug').compileFile(__dirname + '/source/templates/homepage.pug')
@@ -8,10 +9,14 @@ var express = require('express')
   , mongodb_url = 'mongodb://localhost:27017/rally'
   , server = require('http').createServer(app)
   , io = require('socket.io').listen(server)
-  , request = require('request')
 
 app.use(logger('dev'))
 app.use(express.static(__dirname + '/static'))
+app.set('port', process.env.PORT || 80)
+
+app.use(bodyParser.json()); // for parsing application/json
+app.use(bodyParser.urlencoded({extended: true})); // for parsing application/x-www-form-urlencoded
+app.use(upload.array()); // for parsing multipart/form-data
 
 app.get('/', function (req, res, next) {
   try {
@@ -135,6 +140,6 @@ io.on('connection', function(client) {
   });
 });
 
-app.listen(process.env.PORT || 80, function() {
-  console.log('Listening on http://localhost:' + (process.env.PORT || 80))
-})
+server.listen(app.get('port'), function(){
+  console.log("Express server listening on port " + app.get('port'));
+});
