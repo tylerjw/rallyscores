@@ -10,8 +10,8 @@ logger = logging.getLogger(__name__)
 
 # scrapy.shell.inspect_response(response, self)
 
-class RallyamericaSpider(scrapy.Spider):
-    name = 'rallyamerica'
+class RaScoresSpider(scrapy.Spider):
+    name = 'ra_scores'
     allowed_domains = ['rally-america.com']
 
     custom_settings = {
