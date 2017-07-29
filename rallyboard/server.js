@@ -145,7 +145,6 @@ var checkStatus = function() {
           io.emit('status', data);
         } else {
           console.log(err)
-          res.send(err);
         }
       }
     );
