@@ -96,6 +96,7 @@ https://aws.amazon.com/getting-started/tutorials/get-a-domain/
     $ curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
     $ sudo apt-get install -y nodejs
     $ npm install
+    $ sudo npm install forever -g
 
 Test running the server (sudo needed for port 80)
     $ sudo npm run watch
@@ -106,12 +107,14 @@ Test running the server (sudo needed for port 80)
     > db.ra_events.createIndex({year: -1, event_code: 1})
     > db.ra_scores.createIndex({year: -1, event_code: 1})
 
+9. Start the server
+    $ cd ~/rallyscores/rallyboard
+    $ sudo forever start server.js
+
 Notes:
 + Delete all elements in a mongodb collection:
     db.collection.deleteMany({})
 
-TODO:
-1. Stop caching ra page data once the site is live (10 min cache)
 
 
 
