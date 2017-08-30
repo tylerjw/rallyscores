@@ -1,0 +1,14 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+}
+
+#page-header {
+  background: url('http://weaveringrally.com/wp-content/uploads/2017/07/13558701_10157074460095032_1665146287543435271_o.jpg') center no-repeat;
+  background-size: cover;
+}
+
+#segment {
+  padding: 2em 0em;
+}
