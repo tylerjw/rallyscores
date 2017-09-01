@@ -3,10 +3,15 @@ import RaHeader from './RaHeader';
 import RaTableMenu from './RaTableMenu';
 import RaBreadcrumb from './RaBreadcrumb'
 import { getRaEvent } from './Client';
+import {
+  Dimmer,
+  Loader
+} from 'semantic-ui-react';
 
 class RaEvent extends Component {
   state = {
-    data: {}
+    data: {},
+    loaded: false
   }
 
   constructor(props) {
@@ -14,22 +19,31 @@ class RaEvent extends Component {
     const { year, code } = this.props.match.params;
     getRaEvent(year, code, data => {
       this.setState({
-        data: data
+        data: data,
+        loaded: true
       })
     })
   }
 
   render() {
     const { year, code } = this.props.match.params;
-    let { data } = this.state;
+    let { data, loaded } = this.state;
 
-    return (
-      <div id="ra-event">
-        <RaBreadcrumb year={year} code={code}/>
-        <RaHeader data={data}/>
-        <RaTableMenu data={data}/>
-      </div>
-    );
+    if (loaded) {
+      return (
+        <div id="ra-event">
+          <RaBreadcrumb year={year} code={code}/>
+          <RaHeader data={data}/>
+          <RaTableMenu data={data}/>
+        </div>
+      );
+    } else {
+      return (
+        <Dimmer active inverted>
+          <Loader size="large">Loading Data</Loader>
+        </Dimmer>
+      );
+    }
   }
 }
 

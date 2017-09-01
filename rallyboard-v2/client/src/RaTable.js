@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import {
-  Table,
-  Dimmer,
-  Loader
+  Table
 } from 'semantic-ui-react';
 
 class RaTable extends Component {
@@ -76,35 +74,27 @@ class RaTable extends Component {
     
     const { data, standing, stage } = this.props;
 
-    if ('stage_times' in data) {
-      if (standing) {
-        var stage_standings  = data['stage_standings'][stage]['scores'];
-        let standings_body = stage_standings.map(standing_row);
-        return (
-          <Table celled compact>
-            {standing_header(stage+'standing')}
-            <Table.Body>
-              {standings_body}
-            </Table.Body>
-          </Table>
-        );
-      } else {
-        var stage_times  = data['stage_times'][stage]['scores'];
-        let stage_body = stage_times.map(stage_row);
-        return (
-          <Table celled compact>
-            {stage_header(stage+'stage')}
-            <Table.Body>
-              {stage_body}
-            </Table.Body>
-          </Table>
-        );
-      }
-    } else {
+    if (standing) {
+      var stage_standings  = data['stage_standings'][stage]['scores'];
+      let standings_body = stage_standings.map(standing_row);
       return (
-          <Dimmer active inverted>
-            <Loader size="large">Loading Data</Loader>
-          </Dimmer>
+        <Table celled compact unstackable>
+          {standing_header(stage+'standing')}
+          <Table.Body>
+            {standings_body}
+          </Table.Body>
+        </Table>
+      );
+    } else {
+      var stage_times  = data['stage_times'][stage]['scores'];
+      let stage_body = stage_times.map(stage_row);
+      return (
+        <Table celled compact unstackable>
+          {stage_header(stage+'stage')}
+          <Table.Body>
+            {stage_body}
+          </Table.Body>
+        </Table>
       );
     }
   }

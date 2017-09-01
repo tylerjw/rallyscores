@@ -99,7 +99,12 @@ https://aws.amazon.com/getting-started/tutorials/get-a-domain/
     $ sudo npm install forever -g
 
 Test running the server (sudo needed for port 80)
-    $ sudo npm run watch
+    $ PORT=80 sudo npm run start
+
+Build the client on a local checkout and copy it over.  (you can do this on the server, it will just take a while to build)
+    $ cd rallyscores/rallyboard-v2/client
+    $ npm run build
+    $ scp -r build -i ~/.ssh/aws-key.pem ubuntu@rallyscores.com:~/rallyscores/rallyboard-v2/client/
 
 8. Setup indexes in mongo database
     $ mongo
@@ -108,8 +113,8 @@ Test running the server (sudo needed for port 80)
     > db.ra_scores.createIndex({year: -1, event_code: 1})
 
 9. Start the server
-    $ cd ~/rallyscores/rallyboard
-    $ sudo forever start server.js
+    $ cd ~/rallyscores/rallyboard-v2
+    $ sudo forever start "PORT=80 NODE_ENV=production npm run server"
 
 Notes:
 + Delete all elements in a mongodb collection:

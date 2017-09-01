@@ -1,13 +1,20 @@
 import React, { Component } from "react";
 import { getEvents } from "./Client";
-import { Dropdown, Container, Segment, Header } from 'semantic-ui-react';
+import { 
+  Dropdown, 
+  Container, 
+  Segment, 
+  Header,
+  Dimmer,
+  Loader } from 'semantic-ui-react';
 import EventCards from './EventCards';
 
 class EventMenu extends Component {
   state = {
     events: [],
     years: [],
-    activeYear: ''
+    activeYear: '',
+    loaded: false
   }
 
   constructor(props) {
@@ -16,7 +23,8 @@ class EventMenu extends Component {
       this.setState({
         events: data.events,
         years: data.years,
-        activeYear: data.years[0]
+        activeYear: data.years[0],
+        loaded: true
       })
     })
   }
@@ -30,19 +38,27 @@ class EventMenu extends Component {
       }
     });
 
-    return (
-      <Segment id="segment" vertical>
-        <Container>
-          <Header as="h3" style={{ fontSize: '2em' }}>{this.state.activeYear} Events</Header>
-          <Dropdown options={options} fluid search selection
-            onChange={(e, { value }) => { this.setState({activeYear: value}); }}
-            placeholder='Year'/>
-        </Container>
-        <Container style={{ padding: '2em 0em' }}>
-          <EventCards events={this.state.events[this.state.activeYear]}/>
-        </Container>
-      </Segment>
-    );
+    if (this.state.loaded) {
+      return (
+        <Segment id="segment" vertical>
+          <Container>
+            <Header as="h3" style={{ fontSize: '2em' }}>{this.state.activeYear} Events</Header>
+            <Dropdown options={options} fluid search selection
+              onChange={(e, { value }) => { this.setState({activeYear: value}); }}
+              placeholder='Year'/>
+          </Container>
+          <Container style={{ padding: '2em 0em' }}>
+            <EventCards events={this.state.events[this.state.activeYear]}/>
+          </Container>
+        </Segment>
+      );
+    } else {
+      return (
+        <Dimmer active inverted>
+          <Loader size="large">Loading Data</Loader>
+        </Dimmer>
+      );
+    }
   }
 }
 

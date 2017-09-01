@@ -5,7 +5,8 @@ import {
 } from 'react-router-dom'
 import Home from "./Home";
 import RaEvent from "./RaEvent";
-import PageHeader from "./PageHeader"
+import PageHeader from "./PageHeader";
+import PageFooter from "./PageFooter";
 
 class App extends Component {
   render() {
@@ -15,6 +16,7 @@ class App extends Component {
           <PageHeader />
           <Route exact path="/" component={Home}/>
           <Route path="/ra/:year/:code" component={RaEvent}/>
+          <PageFooter />
         </div>
       </Router>
     );

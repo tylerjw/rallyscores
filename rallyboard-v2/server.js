@@ -73,7 +73,6 @@ let updateEventsData = () => {
 
 app.get("/api/events", (req, res) => {
   if (!events_data) {
-    console.log('updating events data')
     updateEventsData();
   }
   res.send(events_data);
