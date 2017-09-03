@@ -46,7 +46,7 @@ class PageFooter extends Component {
               </Grid.Column>
               <Grid.Column width={8}>
                 <Header as='h4' inverted>About</Header>
-                <p>This site was created and funded by Tyler Weaver of the Weavering Rally race team.  Remember why we do this and </p>
+                <p>This site was created and funded by Tyler Weaver of the Weavering Rally race team.  If you do anything stupid, make sure the camera is rolling first.</p>
               </Grid.Column>
             </Grid.Row>
           </Grid>

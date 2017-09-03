@@ -189,7 +189,7 @@ class RaScoresSpider(scrapy.Spider):
         for team in standings:
             position = self.strip_int(team.xpath('.//td[1]/text()').extract_first())
             position_up = self.strip_int(team.xpath('.//td[1]/span[@class="shift-up"]/text()').extract_first(), 0)
-            position_down = self.strip_int(team.xpath('.//td[1]/span[@class="shift-down"]/text()').extract_first(), 0)
+            position_down = self.strip_int(team.xpath('.//td[1]/span[@class="shift-dn"]/text()').extract_first(), 0)
             position_delta = position_up - position_down
 
             car_number = team.xpath('.//td[2]/text()').extract_first()
@@ -198,7 +198,7 @@ class RaScoresSpider(scrapy.Spider):
 
             position_in_class = self.strip_int(team.xpath('.//td[4]/text()').extract_first())
             position_in_class_up = self.strip_int(team.xpath('.//td[4]/span[@class="shift-up"]/text()').extract_first(), 0)
-            position_in_class_down = self.strip_int(team.xpath('.//td[4]/span[@class="shift-down"]/text()').extract_first(), 0)
+            position_in_class_down = self.strip_int(team.xpath('.//td[4]/span[@class="shift-dn"]/text()').extract_first(), 0)
             position_in_class_delta = position_in_class_up - position_in_class_down
 
             driver = team.xpath('.//td[5]/a[1]/text()').extract_first()

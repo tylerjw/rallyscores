@@ -48,7 +48,7 @@ class RaTableMenu extends Component {
     }
 
     return (
-      <Container style={{padding: '1em'}}>
+      <Container>
         <Dropdown options={stages} fluid selection onChange={(e, { value }) => {
           this.setState({
             activeStage: value
@@ -59,7 +59,7 @@ class RaTableMenu extends Component {
         <RaTable standing={this.state.standing} data={data} stage={curr_stage}/>
       </Container>
     );
-  }
+  } 
 }
 
 export default RaTableMenu;

@@ -1,3 +1,6 @@
+import openSocket from 'socket.io-client';
+const socket = openSocket('http://localhost:3000');
+
 function getEvents(cb) {
   return fetch("/api/events", {
     accept: "application/json"
@@ -8,11 +11,25 @@ function getEvents(cb) {
 
 function getRaEvent(year, code, cb) {
   let url = "/api/ra/" + year + "/" + code;
-  return fetch(url, {
-    accept: "application/json"
-  }).then(checkStatus)
+  console.log('requesting: ' + url);
+  return fetch(url, {accept: "application/json"}
+    ).then(checkStatus)
     .then(parseJSON)
     .then(cb);
+}
+
+function updateRaEvent(year, code, cb) {
+  let url = "/api/ra/update/" + year + "/" + code;
+  console.log('requesting: ' + url);
+  return fetch(url, {accept: "application/json"}
+    ).then(checkStatus)
+    .then(parseJSON)
+    .then(cb);
+}
+
+function subscribeToStatus(cb) {
+  socket.on('status', status => cb(null, status));
+  socket.emit('subscribeToStatus', 1000);
 }
 
 function checkStatus(response) {
@@ -30,4 +47,32 @@ function parseJSON(response) {
   return response.json();
 }
 
-export { getEvents, getRaEvent };
+function getJobStatus(jobid, status) {
+  if (status.status !== "ok") {
+    return status.status
+  }
+
+  let jobStatus = "unknown";
+
+  for (let i in status.running) {
+    if (jobid === status.running[i].id) {
+      jobStatus = "running";
+    }
+  }
+
+  for (let i in status.finished) {
+    if (jobid === status.finished[i].id) {
+      jobStatus = "finished";
+    }
+  }
+
+  for (let i in status.pending) {
+    if (jobid === status.pending[i].id) {
+      jobStatus = "pending";
+    }
+  }
+
+  return jobStatus;
+}
+
+export { getEvents, getRaEvent, updateRaEvent, subscribeToStatus, getJobStatus };

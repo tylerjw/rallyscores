@@ -120,7 +120,13 @@ Notes:
 + Delete all elements in a mongodb collection:
     db.collection.deleteMany({})
 
-
+# Local Testing
+Run scrapyd
+    > scrapyd
+Deploy latest spiders
+    > scrapyd-deploy -a
+Run webserver
+    > npm start (in rallyboard-v2)
 
 
 
