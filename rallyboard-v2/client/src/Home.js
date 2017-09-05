@@ -5,7 +5,7 @@ import { Container, Segment, Header } from 'semantic-ui-react';
 class Home extends Component {
   render() {
     const rallyCombinerLink = "http://www.daronhume.com/rally/combine.php5?new_rally=1&rally_id=colo&rally_year=2017";
-    const raLink = "www.rally-america.com";
+    const raLink = "http://www.rally-america.com";
 
     return (
       <div id="home">

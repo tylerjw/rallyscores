@@ -92,11 +92,11 @@ class RaEvent extends Component {
       error = 'This event is in the future.  Please come back later when results are posted.'
     }
 
-    if (!error && no_data) {
+    if (!error && !in_future && no_data) {
       error = 'There is no data yet for this event in our database. Please update the data if scores are available.';
     }
 
-    let show_update_button = (!in_future && no_data && !status);
+    let show_update_button = (!in_future && !status);
 
     if (loaded) {
       ret = (
